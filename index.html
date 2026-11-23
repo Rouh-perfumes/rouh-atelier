@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>رُوح للعطور | ROUH — دار العطور الفاخرة</title>
+  <meta name="description" content="رُوح للعطور — تشكيلة منتقاة من أرقى العطور الأوريجنال وبدائل الميرور العالمية والمسك الفاخر، مع الشحن لجميع محافظات مصر والمعاينة عند الاستلام.">
+  <meta name="theme-color" content="#F8F6F1">
+
+  <link rel="icon" type="image/png" href="logo_dark.png">
+  <link rel="apple-touch-icon" href="logo.png">
+
+  <!-- Editorial Typography: Amiri + IBM Plex Sans Arabic + Cormorant Garamond -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css?v=1.0">
+</head>
+<body>
+
+  <!-- 1. Hairline Announcement Bar -->
+  <div class="top-notice" role="region" aria-label="إعلان الشحن">
+    <div class="container top-notice-inner">
+      <p class="top-notice-text">شحن لجميع محافظات مصر &mdash; معاينة قبل الاستلام</p>
+      <div class="top-notice-meta hide-mobile">
+        <span>EGY / EGP</span>
+        <span class="hairline-sep" aria-hidden="true"></span>
+        <a href="https://m.me/rouh.perfumes.eg" target="_blank" rel="noopener">استشارة عطرية مباشرة</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Architectural Sticky Header -->
+  <header class="site-header" id="site-header">
+    <div class="container header-grid">
+      <!-- Right (Start in RTL): Mobile Menu Trigger / Desktop Nav Links -->
+      <div class="header-start">
+        <button class="icon-btn show-mobile-flex" id="open-mobile-nav" aria-label="فتح القائمة" aria-expanded="false">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="square">
+            <line x1="3" y1="7" x2="21" y2="7"></line>
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="17" x2="21" y2="17"></line>
+          </svg>
+        </button>
+
+        <nav class="desktop-nav hide-mobile" aria-label="التنقل الرئيسي">
+          <a href="#catalog" class="nav-link" data-nav-cat="all">المجموعة الكاملة</a>
+          <a href="#catalog" class="nav-link" data-nav-cat="mirror-all">بدائل الميرور</a>
+          <a href="#catalog" class="nav-link" data-nav-cat="original-all">الأوريجنال</a>
+          <a href="#catalog" class="nav-link" data-nav-cat="care-all">المسك والعناية</a>
+        </nav>
+      </div>
+
+      <!-- Center (Mobile) / Brand Mark -->
+      <div class="header-center">
+        <a href="#" class="brand-mark" aria-label="رُوح للعطور - الرئيسية">
+          <img src="logo.png" alt="رُوح للعطور | ROUH" class="brand-logo" id="brand-logo">
+        </a>
+      </div>
+
+      <!-- Left (End in RTL): Actions (Search, Wishlist Count, Theme Toggle, Bag) -->
+      <div class="header-end">
+        <button class="icon-btn" id="open-search-btn" aria-label="بحث عن عطر">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.35">
+            <circle cx="11" cy="11" r="7.5"></circle>
+            <line x1="20.5" y1="20.5" x2="16.4" y2="16.4"></line>
+          </svg>
+        </button>
+
+        <button class="icon-btn" id="theme-toggle-btn" aria-label="تبديل المظهر الفاتح والداكن" title="تبديل المظهر">
+          <svg class="theme-icon-dark" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.35">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <svg class="theme-icon-light" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.35">
+            <circle cx="12" cy="12" r="4.5"></circle>
+            <line x1="12" y1="2" x2="12" y2="4.5"></line>
+            <line x1="12" y1="19.5" x2="12" y2="22"></line>
+            <line x1="4.93" y1="4.93" x2="6.7" y2="6.7"></line>
+            <line x1="17.3" y1="17.3" x2="19.07" y2="19.07"></line>
+            <line x1="2" y1="12" x2="4.5" y2="12"></line>
+            <line x1="19.5" y1="12" x2="22" y2="12"></line>
+            <line x1="4.93" y1="19.07" x2="6.7" y2="17.3"></line>
+            <line x1="17.3" y1="6.7" x2="19.07" y2="4.93"></line>
+          </svg>
+        </button>
+
+        <button class="icon-btn bag-trigger" id="open-bag-btn" aria-label="حقيبة التسوق">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.35">
+            <path d="M6 8h12l1 12H5L6 8z"></path>
+            <path d="M9 8V6a3 3 0 0 1 6 0v2"></path>
+          </svg>
+          <span class="bag-badge" id="bag-count">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main-content">
+
+    <!-- 3. Asymmetric Editorial Hero -->
+    <section class="hero-editorial">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <span class="eyebrow">إصدار الدار &mdash; الخريف والشتاء</span>
+          <h1 class="hero-title">روح &mdash; عطور تروي حكايتك</h1>
+          <p class="hero-subtitle">
+            مجموعة مختارة من أرقى العطور الأوريجنال وبدائل الميرور المطابقة بأعلى تركيز وثبات، مع خامات عطرية أصيلة من العنبر الملكي والعود واللبان العماني.
+          </p>
+          <div class="hero-actions">
+            <a href="#catalog" class="btn-primary" id="hero-explore-btn">استكشف المجموعة</a>
+            <button type="button" class="btn-link-underline" id="hero-mirror-btn">بدائل الميرور</button>
+          </div>
+          <div class="hero-footnotes">
+            <div>
+              <span class="footnote-num">198</span>
+              <span class="footnote-lbl">إصدار متاح بالدار</span>
+            </div>
+            <div>
+              <span class="footnote-num">100 ml</span>
+              <span class="footnote-lbl">تركيز وثبات ممتد</span>
+            </div>
+            <div>
+              <span class="footnote-num">EGY</span>
+              <span class="footnote-lbl">معاينة عند الاستلام</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <figure class="hero-frame">
+            <img src="campaigns/hero-interlude-notes.jpg" alt="أمواج إنترلود مان ونوتاته العطرية من رُوح" class="hero-img">
+            <figcaption class="hero-caption">
+              <span class="caption-code">RH-0325</span>
+              <span>أمواج إنترلود مان &mdash; اللبان العماني والعنبر الكهرماني والعود</span>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Editorial Collections Lookbook (3 Curated Cards) -->
+    <section class="collections-section" aria-label="المجموعات المختارة">
+      <div class="container">
+        <div class="section-header-row">
+          <div>
+            <span class="eyebrow">الأقسام الرئيسية</span>
+            <h2 class="section-heading">المجموعات المختارة</h2>
+          </div>
+          <p class="section-sub hide-mobile">اختيارات مصنفة بعناية حسب التركيز والهوية العطرية</p>
+        </div>
+
+        <div class="collections-grid">
+          <button type="button" class="collection-card" data-collection="mirror-all">
+            <div class="collection-media">
+              <img src="campaigns/collection-mirror.jpg" alt="بدائل الميرور الفاخرة" loading="lazy">
+            </div>
+            <div class="collection-meta">
+              <span class="collection-index">01</span>
+              <h3 class="collection-title">بدائل الميرور الفاخرة</h3>
+              <p class="collection-desc">تطابق دقيق في النوتات والزجاجة مع ثبات وفوحان يدوم طوال اليوم &mdash; 95 إصداراً</p>
+              <span class="collection-cta">تصفح القسم</span>
+            </div>
+          </button>
+
+          <button type="button" class="collection-card" data-collection="original-all">
+            <div class="collection-media">
+              <img src="campaigns/collection-original.jpg" alt="إصدارات الأوريجنال" loading="lazy">
+            </div>
+            <div class="collection-meta">
+              <span class="collection-index">02</span>
+              <h3 class="collection-title">إصدارات الأوريجنال</h3>
+              <p class="collection-desc">عطور أصلية مختارة وإصدارات نيش 30 مل و100 مل لعشاق التفرد &mdash; 53 إصداراً</p>
+              <span class="collection-cta">تصفح القسم</span>
+            </div>
+          </button>
+
+          <button type="button" class="collection-card" data-collection="care-all">
+            <div class="collection-media">
+              <img src="campaigns/collection-signature.jpg" alt="المسك والعناية اليومية" loading="lazy">
+            </div>
+            <div class="collection-meta">
+              <span class="collection-index">03</span>
+              <h3 class="collection-title">المسك والعناية اليومية</h3>
+              <p class="collection-desc">المسك الأبيض الفاخر وبودي سبلاش ومعطرات الجسم بلمسة ناعمة &mdash; 50 إصداراً</p>
+              <span class="collection-cta">تصفح القسم</span>
+            </div>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Main Catalog Section -->
+    <section class="catalog-section" id="catalog">
+      <div class="container">
+        <div class="catalog-header">
+          <div>
+            <span class="eyebrow">الكتالوج الرسمي</span>
+            <h2 class="section-heading">الأرشيف العطري</h2>
+          </div>
+          <div class="catalog-header-actions">
+            <span class="results-counter" id="results-count">198 إصدار</span>
+            <button type="button" class="btn-outline show-mobile-flex" id="open-mobile-filter">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <line x1="4" y1="6" x2="20" y2="6"></line>
+                <line x1="7" y1="12" x2="17" y2="12"></line>
+                <line x1="10" y1="18" x2="14" y2="18"></line>
+              </svg>
+              <span>تصفية وترتيب</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Category Underline Tabs -->
+        <div class="category-tabs-wrap">
+          <div class="category-tabs" id="category-tabs" role="tablist" aria-label="تصنيفات العطور">
+            <button type="button" class="cat-tab active" data-category="all">الكل</button>
+            <button type="button" class="cat-tab" data-category="mirror-men">ميرور رجالي</button>
+            <button type="button" class="cat-tab" data-category="mirror-women">ميرور حريمي</button>
+            <button type="button" class="cat-tab" data-category="mirror-unisex">ميرور للجنسين</button>
+            <button type="button" class="cat-tab" data-category="original-men">أوريجنال رجالي</button>
+            <button type="button" class="cat-tab" data-category="original-women">أوريجنال حريمي</button>
+            <button type="button" class="cat-tab" data-category="original-unisex">أوريجنال للجنسين</button>
+            <button type="button" class="cat-tab" data-category="body-spray">معطرات جسم</button>
+            <button type="button" class="cat-tab" data-category="body-splash">بودي سبلاش</button>
+            <button type="button" class="cat-tab" data-category="white-musk">مسك فاخر</button>
+          </div>
+        </div>
+
+        <!-- Secondary Filters Bar (Desktop & Tablet) -->
+        <div class="filters-toolbar hide-mobile">
+          <!-- Gender Segmented Control -->
+          <div class="filter-group">
+            <span class="filter-lbl">الفئة:</span>
+            <div class="segmented-control" id="gender-filter">
+              <button type="button" class="seg-btn active" data-gender="all">الجميع</button>
+              <button type="button" class="seg-btn" data-gender="men">رجالي</button>
+              <button type="button" class="seg-btn" data-gender="women">حريمي</button>
+              <button type="button" class="seg-btn" data-gender="unisex">للجنسين</button>
+            </div>
+          </div>
+
+          <!-- Olfactory Note Filter -->
+          <div class="filter-group notes-filter-group">
+            <span class="filter-lbl">النوتة:</span>
+            <div class="notes-pills" id="note-filter">
+              <button type="button" class="note-btn active" data-note="all">الكل</button>
+              <button type="button" class="note-btn" data-note="خشبي">خشبي</button>
+              <button type="button" class="note-btn" data-note="عنبري">عنبري</button>
+              <button type="button" class="note-btn" data-note="فانيلا">فانيلا</button>
+              <button type="button" class="note-btn" data-note="حمضي">حمضي</button>
+              <button type="button" class="note-btn" data-note="زهري">زهري</button>
+              <button type="button" class="note-btn" data-note="مسكي">مسكي</button>
+              <button type="button" class="note-btn" data-note="متبل">متبل</button>
+              <button type="button" class="note-btn" data-note="سويت">سويت</button>
+            </div>
+          </div>
+
+          <!-- Sort Select -->
+          <div class="filter-group sort-group">
+            <label for="sort-select" class="filter-lbl">الترتيب:</label>
+            <select id="sort-select" class="minimal-select">
+              <option value="default">الموصى به</option>
+              <option value="price-asc">السعر: الأقل أولاً</option>
+              <option value="price-desc">السعر: الأعلى أولاً</option>
+              <option value="name-asc">الأبجدي (أ - ي)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Active Filter Summary / Reset Strip -->
+        <div class="active-filters-bar" id="active-filters-bar" hidden>
+          <div class="active-filters-list" id="active-filters-list"></div>
+          <button type="button" class="btn-text-reset" id="reset-all-filters">مسح التصفية</button>
+        </div>
+
+        <!-- Responsive Product Grid (4 col desktop, 3 tablet, 2 mobile) -->
+        <div class="products-grid" id="products-grid"></div>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="empty-state" hidden>
+          <p class="empty-title">لم نعثر على عطور مطابقة لاختياراتك</p>
+          <p class="empty-sub">جرّب إزالة بعض الفلاتر أو البحث بكلمة أخرى</p>
+          <button type="button" class="btn-primary" id="empty-reset-btn">عرض جميع العطور</button>
+        </div>
+
+        <!-- Pagination / Load More -->
+        <div class="pagination-wrap" id="pagination-wrap">
+          <p class="pagination-progress" id="pagination-progress"></p>
+          <button type="button" class="btn-outline btn-load-more" id="load-more-btn">عرض المزيد من العطور</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. Editorial Brand Promise Strip -->
+    <section class="promise-strip" aria-label="معايير الجودة">
+      <div class="container promise-grid">
+        <div class="promise-item">
+          <span class="promise-num">I</span>
+          <h3 class="promise-title">نقاء الزيوت والتركيز</h3>
+          <p class="promise-desc">توليفات عالية الثبات تمنحك تطابقاً دقيقاً مع الإصدارات العالمية دون حدة كحولية.</p>
+        </div>
+        <div class="promise-item">
+          <span class="promise-num">II</span>
+          <h3 class="promise-title">معاينة كاملة عند الاستلام</h3>
+          <p class="promise-desc">تأكّد من جودة التغليف والزجاجة بنفسك قبل دفع أي مبلغ لمندوب الشحن.</p>
+        </div>
+        <div class="promise-item">
+          <span class="promise-num">III</span>
+          <h3 class="promise-title">تغليف آمن ومحكم</h3>
+          <p class="promise-desc">شحن مبطّن لجميع محافظات مصر يضمن وصول زجاجتك بأعلى حالة.</p>
+        </div>
+        <div class="promise-item">
+          <span class="promise-num">IV</span>
+          <h3 class="promise-title">استشارة عطرية خاصة</h3>
+          <p class="promise-desc">فريقنا يساعدك في اختيار العطر المناسب لذوقك والموسم عبر ماسنجر.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 7. Minimal 4-Column Architectural Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand-col">
+          <img src="logo.png" alt="رُوح للعطور" class="footer-logo" id="footer-logo">
+          <p class="footer-tagline">SCENTS FOR YOUR STORY</p>
+          <p class="footer-desc">
+            دار رُوح للعطور &mdash; وجهتك المنتقاة للعطور الأوريجنال وبدائل الميرور العالمية والمسك الفاخر في مصر.
+          </p>
+        </div>
+
+        <div>
+          <h4 class="footer-heading">بدائل الميرور</h4>
+          <ul class="footer-list">
+            <li><button type="button" class="footer-cat-link" data-category="mirror-men">ميرور رجالي</button></li>
+            <li><button type="button" class="footer-cat-link" data-category="mirror-women">ميرور حريمي</button></li>
+            <li><button type="button" class="footer-cat-link" data-category="mirror-unisex">ميرور للجنسين</button></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer-heading">أوريجنال وعناية</h4>
+          <ul class="footer-list">
+            <li><button type="button" class="footer-cat-link" data-category="original-men">أوريجنال رجالي</button></li>
+            <li><button type="button" class="footer-cat-link" data-category="original-women">أوريجنال حريمي</button></li>
+            <li><button type="button" class="footer-cat-link" data-category="original-unisex">أوريجنال للجنسين</button></li>
+            <li><button type="button" class="footer-cat-link" data-category="white-musk">المسك الفاخر والعناية</button></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer-heading">التواصل والطلب</h4>
+          <ul class="footer-list">
+            <li><a href="https://m.me/rouh.perfumes.eg" target="_blank" rel="noopener">الطلب عبر ماسنجر المباشر</a></li>
+            <li><a href="https://www.facebook.com/rouh.perfumes.eg/" target="_blank" rel="noopener">صفحتنا الرسمية على فيسبوك</a></li>
+            <li><span class="footer-static-item">الشحن لجميع محافظات مصر</span></li>
+            <li><span class="footer-static-item">الدفع عند الاستلام بعد المعاينة</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 رُوح للعطور (ROUH &amp; CO.). جميع الحقوق محفوظة.</p>
+        <p class="footer-lat">SCENTS FOR YOUR STORY</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- =========================================================================
+       Overlays, Modals & Drawers
+       ========================================================================= -->
+
+  <!-- A. Full-Width Predictive Search Overlay -->
+  <div class="search-overlay" id="search-overlay" aria-hidden="true">
+    <div class="search-overlay-inner container">
+      <div class="search-overlay-bar">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.35">
+          <circle cx="11" cy="11" r="7.5"></circle>
+          <line x1="20.5" y1="20.5" x2="16.4" y2="16.4"></line>
+        </svg>
+        <input
+          type="search"
+          id="search-input"
+          class="search-overlay-input"
+          placeholder="ابحث باسم العطر، البراند، الكود (RH-0325)، أو النوتة العطرية..."
+          autocomplete="off"
+        >
+        <button type="button" class="icon-btn" id="close-search-btn" aria-label="إغلاق البحث">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.35">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="search-results-area" id="search-results-area">
+        <p class="search-hint">ابدأ الكتابة للبحث الفوري في جميع العطور الـ 198، أو اختر نوتة شائعة:</p>
+        <div class="search-quick-terms">
+          <button type="button" class="quick-term-btn" data-term="أمواج">أمواج إنترلود</button>
+          <button type="button" class="quick-term-btn" data-term="ديور">ديور سوفاج</button>
+          <button type="button" class="quick-term-btn" data-term="توم فورد">توم فورد</button>
+          <button type="button" class="quick-term-btn" data-term="عنبري">عنبري</button>
+          <button type="button" class="quick-term-btn" data-term="فانيلا">فانيلا</button>
+          <button type="button" class="quick-term-btn" data-term="مسك">مسك</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- B. Product Detail Modal -->
+  <div class="modal-backdrop" id="product-modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal-dialog">
+      <button type="button" class="modal-close" id="close-product-modal" aria-label="إغلاق">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.35">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <div class="modal-body" id="product-modal-body"></div>
+    </div>
+  </div>
+
+  <!-- C. Shopping Bag Slide Drawer (حقيبة التسوق) -->
+  <div class="drawer-backdrop" id="bag-drawer" aria-hidden="true" role="dialog" aria-modal="true" aria-label="حقيبة التسوق">
+    <aside class="drawer-panel bag-panel">
+      <div class="drawer-head">
+        <h3 class="drawer-heading">حقيبة التسوق <span class="drawer-sub-count" id="drawer-bag-count">(0)</span></h3>
+        <button type="button" class="icon-btn" id="close-bag-btn" aria-label="إغلاق الحقيبة">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.35">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="drawer-scroll" id="bag-items-container"></div>
+
+      <div class="drawer-foot" id="bag-footer">
+        <div class="bag-subtotal-row">
+          <span>الإجمالي التقديري</span>
+          <strong class="bag-subtotal-val" id="bag-subtotal">0 ج.م</strong>
+        </div>
+        <p class="bag-shipping-note">الدفع عند الاستلام بعد المعاينة &mdash; يضاف الشحن حسب المحافظة.</p>
+        <button type="button" class="btn-primary btn-full" id="bag-checkout-btn">إتمام الطلب عبر ماسنجر</button>
+        <button type="button" class="btn-outline btn-full" id="bag-copy-btn">نسخ تفاصيل الطلب</button>
+      </div>
+    </aside>
+  </div>
+
+  <!-- D. Mobile Navigation Drawer -->
+  <div class="drawer-backdrop" id="mobile-nav-drawer" aria-hidden="true" role="dialog" aria-modal="true" aria-label="قائمة التنقل">
+    <aside class="drawer-panel nav-panel">
+      <div class="drawer-head">
+        <span class="drawer-heading">الأقسام</span>
+        <button type="button" class="icon-btn" id="close-mobile-nav" aria-label="إغلاق القائمة">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.35">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="mobile-nav-list">
+        <button type="button" class="mob-nav-link" data-mob-cat="all">المجموعة الكاملة (198)</button>
+        <button type="button" class="mob-nav-link" data-mob-cat="mirror-all">بدائل الميرور الفاخرة</button>
+        <button type="button" class="mob-nav-link" data-mob-cat="mirror-men">ميرور رجالي</button>
+        <button type="button" class="mob-nav-link" data-mob-cat="mirror-women">ميرور حريمي</button>
+        <button type="button" class="mob-nav-link" data-mob-cat="mirror-unisex">ميرور للجنسين</button>
+        <button type="button" class="mob-nav-link" data-mob-cat="original-all">إصدارات الأوريجنال</button>
+        <button type="button" class="mob-nav-link" data-mob-cat="white-musk">المسك الفاخر والعناية</button>
+      </div>
+      <div class="mobile-nav-footer">
+        <a href="https://m.me/rouh.perfumes.eg" target="_blank" rel="noopener" class="btn-primary btn-full">محادثة ماسنجر مباشرة</a>
+        <a href="https://www.facebook.com/rouh.perfumes.eg/" target="_blank" rel="noopener" class="btn-outline btn-full">صفحتنا على فيسبوك</a>
+      </div>
+    </aside>
+  </div>
+
+  <!-- E. Mobile Filter Bottom Sheet -->
+  <div class="drawer-backdrop" id="mobile-filter-sheet" aria-hidden="true" role="dialog" aria-modal="true" aria-label="تصفية وترتيب العطور">
+    <div class="bottom-sheet-panel">
+      <div class="drawer-head">
+        <h3 class="drawer-heading">تصفية وترتيب</h3>
+        <button type="button" class="icon-btn" id="close-mobile-filter" aria-label="إغلاق">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.35">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="sheet-body">
+        <div class="sheet-block">
+          <span class="sheet-label">الفئة</span>
+          <div class="sheet-chips" id="mob-gender-filter">
+            <button type="button" class="seg-btn active" data-gender="all">الجميع</button>
+            <button type="button" class="seg-btn" data-gender="men">رجالي</button>
+            <button type="button" class="seg-btn" data-gender="women">حريمي</button>
+            <button type="button" class="seg-btn" data-gender="unisex">للجنسين</button>
+          </div>
+        </div>
+
+        <div class="sheet-block">
+          <span class="sheet-label">النوتة العطرية</span>
+          <div class="sheet-chips" id="mob-note-filter">
+            <button type="button" class="note-btn active" data-note="all">الكل</button>
+            <button type="button" class="note-btn" data-note="خشبي">خشبي</button>
+            <button type="button" class="note-btn" data-note="عنبري">عنبري</button>
+            <button type="button" class="note-btn" data-note="فانيلا">فانيلا</button>
+            <button type="button" class="note-btn" data-note="حمضي">حمضي</button>
+            <button type="button" class="note-btn" data-note="زهري">زهري</button>
+            <button type="button" class="note-btn" data-note="مسكي">مسكي</button>
+            <button type="button" class="note-btn" data-note="متبل">متبل</button>
+            <button type="button" class="note-btn" data-note="سويت">سويت</button>
+          </div>
+        </div>
+
+        <div class="sheet-block">
+          <label for="mob-sort-select" class="sheet-label">الترتيب</label>
+          <select id="mob-sort-select" class="minimal-select select-full">
+            <option value="default">الموصى به</option>
+            <option value="price-asc">السعر: الأقل أولاً</option>
+            <option value="price-desc">السعر: الأعلى أولاً</option>
+            <option value="name-asc">الأبجدي (أ - ي)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="sheet-foot">
+        <button type="button" class="btn-outline" id="mob-reset-btn">إعادة ضبط</button>
+        <button type="button" class="btn-primary" id="mob-apply-btn">عرض النتائج</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Minimal Toast -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="products.js"></script>
+  <script src="app.js?v=1.0"></script>
+</body>
+</html>
