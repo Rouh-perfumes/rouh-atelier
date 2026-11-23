@@ -5,7 +5,7 @@
 (function () {
   "use strict";
 
-  const PAGE_SIZE = 24;
+  const PAGE_SIZE = 16;
   const STORAGE_KEYS = {
     theme: "rouh_atelier_theme",
     bag: "rouh_atelier_bag",
@@ -235,7 +235,7 @@
     document.documentElement.setAttribute("data-theme", state.theme);
     saveStorage(STORAGE_KEYS.theme, state.theme);
 
-    const logoSrc = state.theme === "dark" ? "logo_dark.png" : "logo.png";
+    const logoSrc = state.theme === "dark" ? "logo_dark.webp" : "logo.webp";
     if (el.brandLogo) el.brandLogo.src = logoSrc;
     if (el.footerLogo) el.footerLogo.src = logoSrc;
 
@@ -327,12 +327,12 @@
     const notePreview = (p.notes || []).slice(0, 3).join(" · ");
     const safeName = escapeHtml(p.name);
     const safeBrand = escapeHtml(p.brand || "ROUH");
-    const safeImg = escapeHtml(p.image || "batch1_images/img_002.jpg");
+    const safeImg = escapeHtml(p.image || "batch1_images/img_002.webp");
 
     return `
       <article class="product-card" data-id="${escapeHtml(p.id)}">
         <div class="card-media" data-action="quick-view" data-id="${escapeHtml(p.id)}">
-          <img src="${safeImg}" alt="${safeName}" class="card-img" loading="lazy">
+          <img src="${safeImg}" alt="${safeName}" class="card-img" width="460" height="460" loading="lazy" decoding="async">
           <button
             type="button"
             class="card-wish-btn ${isWished ? "active" : ""}"
@@ -534,7 +534,7 @@
       .map(
         ({ product, qty }) => `
         <div class="bag-item">
-          <img src="${escapeHtml(product.image)}" alt="${escapeHtml(product.name)}" class="bag-item-img">
+          <img src="${escapeHtml(product.image)}" alt="${escapeHtml(product.name)}" class="bag-item-img" width="70" height="70" decoding="async">
           <div>
             <div class="bag-item-top">
               <span class="bag-item-name">${escapeHtml(product.name)}</span>
@@ -641,7 +641,7 @@
 
     el.productModalBody.innerHTML = `
       <div class="modal-media">
-        <img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.name)}">
+        <img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.name)}" width="460" height="460" decoding="async">
       </div>
       <div class="modal-info">
         <span class="modal-brand">${escapeHtml(p.brand || "ROUH & CO.")}</span>
@@ -734,7 +734,7 @@
           .map(
             (p) => `
           <button type="button" class="search-result-row" data-search-pick="${escapeHtml(p.id)}">
-            <img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.name)}" class="search-result-img">
+            <img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.name)}" class="search-result-img" width="56" height="56" decoding="async">
             <div>
               <div class="search-result-name">${escapeHtml(p.name)}</div>
               <div class="search-result-meta">${escapeHtml(p.brand)} · ${formatPrice(p.price)}</div>

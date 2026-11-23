@@ -10,12 +10,15 @@
   <link rel="icon" type="image/png" href="logo_dark.png">
   <link rel="apple-touch-icon" href="logo.png">
 
-  <!-- Editorial Typography: Amiri + IBM Plex Sans Arabic + Cormorant Garamond -->
+  <!-- Editorial Typography: Amiri + IBM Plex Sans Arabic + Cormorant Garamond (trimmed weights) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Cormorant+Garamond:wght@500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css?v=1.0">
+  <!-- Preload Hero LCP image -->
+  <link rel="preload" as="image" href="campaigns/hero-interlude-notes.webp" type="image/webp" fetchpriority="high">
+
+  <link rel="stylesheet" href="style.css?v=2.0">
 </head>
 <body>
 
@@ -55,7 +58,7 @@
       <!-- Center (Mobile) / Brand Mark -->
       <div class="header-center">
         <a href="#" class="brand-mark" aria-label="رُوح للعطور - الرئيسية">
-          <img src="logo.png" alt="رُوح للعطور | ROUH" class="brand-logo" id="brand-logo">
+          <img src="logo.webp" alt="رُوح للعطور | ROUH" class="brand-logo" id="brand-logo" width="81" height="54" decoding="async">
         </a>
       </div>
 
@@ -129,7 +132,7 @@
 
         <div class="hero-visual">
           <figure class="hero-frame">
-            <img src="campaigns/hero-interlude-notes.jpg" alt="أمواج إنترلود مان ونوتاته العطرية من رُوح" class="hero-img">
+            <img src="campaigns/hero-interlude-notes.webp" alt="أمواج إنترلود مان ونوتاته العطرية من رُوح" class="hero-img" width="900" height="1200" fetchpriority="high" decoding="async">
             <figcaption class="hero-caption">
               <span class="caption-code">RH-0325</span>
               <span>أمواج إنترلود مان &mdash; اللبان العماني والعنبر الكهرماني والعود</span>
@@ -153,7 +156,7 @@
         <div class="collections-grid">
           <button type="button" class="collection-card" data-collection="mirror-all">
             <div class="collection-media">
-              <img src="campaigns/collection-signature.jpg" alt="بدائل الميرور الفاخرة" loading="lazy">
+              <img src="campaigns/collection-signature.webp" alt="بدائل الميرور الفاخرة" width="768" height="1024" loading="lazy" decoding="async">
             </div>
             <div class="collection-meta">
               <span class="collection-index">01</span>
@@ -165,7 +168,7 @@
 
           <button type="button" class="collection-card" data-collection="original-all">
             <div class="collection-media">
-              <img src="campaigns/collection-original.jpg" alt="إصدارات الأوريجنال" loading="lazy">
+              <img src="campaigns/collection-original.webp" alt="إصدارات الأوريجنال" width="768" height="1024" loading="lazy" decoding="async">
             </div>
             <div class="collection-meta">
               <span class="collection-index">02</span>
@@ -177,7 +180,7 @@
 
           <button type="button" class="collection-card" data-collection="care-all">
             <div class="collection-media">
-              <img src="campaigns/collection-musk.jpg" alt="المسك والعناية اليومية" loading="lazy">
+              <img src="campaigns/collection-musk.webp" alt="المسك والعناية اليومية" width="768" height="1024" loading="lazy" decoding="async">
             </div>
             <div class="collection-meta">
               <span class="collection-index">03</span>
@@ -324,7 +327,7 @@
     <div class="container">
       <div class="footer-grid">
         <div class="footer-brand-col">
-          <img src="logo.png" alt="رُوح للعطور" class="footer-logo" id="footer-logo">
+          <img src="logo.webp" alt="رُوح للعطور" class="footer-logo" id="footer-logo" width="78" height="52" loading="lazy" decoding="async">
           <p class="footer-tagline">SCENTS FOR YOUR STORY</p>
           <p class="footer-desc">
             دار رُوح للعطور &mdash; وجهتك المنتقاة للعطور الأوريجنال وبدائل الميرور العالمية والمسك الفاخر في مصر.
@@ -536,7 +539,7 @@
   <!-- Minimal Toast -->
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <script src="products.js"></script>
-  <script src="app.js?v=1.0"></script>
+  <script src="products.js?v=2.0" defer></script>
+  <script src="app.js?v=2.0" defer></script>
 </body>
 </html>

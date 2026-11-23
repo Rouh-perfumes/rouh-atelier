@@ -440,9 +440,11 @@ img {
 
 .hero-img {
   width: 100%;
+  height: auto;
   aspect-ratio: 3 / 4;
   object-fit: cover;
   object-position: center top;
+  background-color: var(--bg-subtle);
 }
 
 .hero-caption {
@@ -509,7 +511,9 @@ img {
   width: 100%;
   aspect-ratio: 4 / 5;
   overflow: hidden;
-  background-color: var(--bg-subtle);
+  background: linear-gradient(90deg, var(--bg-subtle) 25%, var(--bg-surface) 50%, var(--bg-subtle) 75%);
+  background-size: 200% 100%;
+  animation: mediaShimmer 1.8s infinite linear;
 }
 
 .collection-media img {
@@ -808,12 +812,19 @@ img {
   border-color: var(--border-strong);
 }
 
+@keyframes mediaShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
 .card-media {
   position: relative;
   width: 100%;
   aspect-ratio: 1 / 1;
   overflow: hidden;
-  background-color: var(--bg-card-media);
+  background: linear-gradient(90deg, var(--bg-card-media) 25%, var(--bg-subtle) 50%, var(--bg-card-media) 75%);
+  background-size: 200% 100%;
+  animation: mediaShimmer 1.8s infinite linear;
   cursor: pointer;
   border-bottom: 1px solid var(--border-hairline);
 }
