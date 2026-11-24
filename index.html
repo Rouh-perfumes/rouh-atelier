@@ -18,14 +18,14 @@
   <!-- Preload Hero LCP image -->
   <link rel="preload" as="image" href="campaigns/hero-interlude-notes.webp" type="image/webp" fetchpriority="high">
 
-  <link rel="stylesheet" href="style.css?v=2.0">
+  <link rel="stylesheet" href="style.css?v=3.0">
 </head>
 <body>
 
   <!-- 1. Hairline Announcement Bar -->
   <div class="top-notice" role="region" aria-label="إعلان الشحن">
     <div class="container top-notice-inner">
-      <p class="top-notice-text">شحن لجميع محافظات مصر &mdash; معاينة قبل الاستلام</p>
+      <p class="top-notice-text" id="top-notice-text">شحن لجميع محافظات مصر &mdash; معاينة قبل الاستلام</p>
       <div class="top-notice-meta hide-mobile">
         <span>EGY / EGP</span>
         <span class="hairline-sep" aria-hidden="true"></span>
@@ -445,10 +445,118 @@
           <strong class="bag-subtotal-val" id="bag-subtotal">0 ج.م</strong>
         </div>
         <p class="bag-shipping-note">الدفع عند الاستلام بعد المعاينة &mdash; يضاف الشحن حسب المحافظة.</p>
-        <button type="button" class="btn-primary btn-full" id="bag-checkout-btn">إتمام الطلب عبر ماسنجر</button>
-        <button type="button" class="btn-outline btn-full" id="bag-copy-btn">نسخ تفاصيل الطلب</button>
+        <button type="button" class="btn-primary btn-full" id="open-checkout-btn">إتمام الطلب الآن</button>
+        <button type="button" class="btn-outline btn-full" id="bag-checkout-btn">طلب سريع عبر ماسنجر</button>
+        <button type="button" class="btn-text-copy" id="bag-copy-btn">نسخ تفاصيل الطلب</button>
       </div>
     </aside>
+  </div>
+
+  <!-- C2. In-Site Checkout & Coupons Modal -->
+  <div class="modal-backdrop" id="checkout-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-label="إتمام الطلب">
+    <div class="modal-dialog checkout-dialog">
+      <div class="drawer-head">
+        <h3 class="drawer-heading">إتمام الطلب &mdash; الدفع عند الاستلام</h3>
+        <button type="button" class="icon-btn" id="close-checkout-modal" aria-label="إغلاق نافذة الطلب">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.35">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Checkout Form View -->
+      <div class="checkout-grid" id="checkout-form-view">
+        <form id="checkout-form" class="checkout-form" novalidate>
+          <div class="form-field">
+            <label for="co-name" class="form-label">الاسم بالكامل *</label>
+            <input type="text" id="co-name" class="form-input" placeholder="مثال: أحمد محمد" required minlength="2">
+          </div>
+
+          <div class="form-field">
+            <label for="co-phone" class="form-label">رقم الموبايل (يفضل متاح واتساب) *</label>
+            <input type="tel" id="co-phone" class="form-input" placeholder="01012345678" required inputmode="tel" dir="ltr">
+          </div>
+
+          <div class="form-field">
+            <label for="co-gov" class="form-label">المحافظة / المنطقة *</label>
+            <select id="co-gov" class="form-input" required>
+              <option value="القاهرة والجيزة">القاهرة والجيزة</option>
+              <option value="الإسكندرية والوجه البحري">الإسكندرية والوجه البحري</option>
+              <option value="مدن القناة وسيناء">مدن القناة وسيناء</option>
+              <option value="الصعيد ومطروح والبحر الأحمر">الصعيد ومطروح والبحر الأحمر</option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="co-address" class="form-label">العنوان التفصيلي *</label>
+            <input type="text" id="co-address" class="form-input" placeholder="الشارع، رقم العمارة، الشقة، وعلامة مميزة" required minlength="5">
+          </div>
+
+          <div class="form-field">
+            <label for="co-notes" class="form-label">ملاحظات إضافية (اختياري)</label>
+            <input type="text" id="co-notes" class="form-input" placeholder="مواعيد استلام مفضلة أو طلب تغليف هدية">
+          </div>
+
+          <p class="form-error" id="checkout-error" hidden></p>
+
+          <button type="submit" class="btn-primary btn-full" id="submit-order-btn">
+            تأكيد الطلب &mdash; الدفع عند الاستلام
+          </button>
+        </form>
+
+        <div class="checkout-summary-box">
+          <h4 class="checkout-summary-title">ملخص الحقيبة</h4>
+          <div class="checkout-mini-items" id="checkout-mini-items"></div>
+
+          <div class="coupon-box">
+            <label for="coupon-input" class="form-label">هل لديك كود خصم؟</label>
+            <div class="coupon-row">
+              <input type="text" id="coupon-input" class="form-input" placeholder="مثال: ROUH10" dir="ltr">
+              <button type="button" class="btn-outline" id="apply-coupon-btn">تطبيق</button>
+            </div>
+            <p class="coupon-feedback" id="coupon-feedback" hidden></p>
+          </div>
+
+          <div class="checkout-totals">
+            <div class="tot-row">
+              <span>المجموع الفرعي</span>
+              <span id="co-subtotal">0 ج.م</span>
+            </div>
+            <div class="tot-row" id="co-discount-row" hidden>
+              <span>الخصم <small id="co-coupon-label"></small></span>
+              <span class="discount-val" id="co-discount">-0 ج.م</span>
+            </div>
+            <div class="tot-row">
+              <span>مصاريف الشحن</span>
+              <span id="co-shipping">60 ج.م</span>
+            </div>
+            <div class="tot-row tot-grand">
+              <span>الإجمالي النهائي</span>
+              <strong id="co-grand-total">0 ج.م</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Success View -->
+      <div class="checkout-success" id="checkout-success-view" hidden>
+        <div class="success-mark" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        </div>
+        <h3 class="success-title">تم استلام طلبك بنجاح</h3>
+        <p class="success-code-line">رقم الطلب: <strong id="confirmed-order-code" dir="ltr">ROUH-000000</strong></p>
+        <p class="success-desc">
+          شكراً لاختيارك رُوح للعطور. سيتواصل معك فريقنا قريباً لتأكيد الموعد والشحن. الدفع عند الاستلام بعد المعاينة.
+        </p>
+        <div class="success-actions">
+          <button type="button" class="btn-primary" id="confirmed-messenger-btn">إرسال نسخة على ماسنجر</button>
+          <button type="button" class="btn-outline" id="confirmed-done-btn">العودة للمتجر</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- D. Mobile Navigation Drawer -->
@@ -539,7 +647,9 @@
   <!-- Minimal Toast -->
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <script src="products.js?v=2.0" defer></script>
-  <script src="app.js?v=2.0" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="supabase-config.js?v=3.0" defer></script>
+  <script src="products.js?v=3.0" defer></script>
+  <script src="app.js?v=3.0" defer></script>
 </body>
 </html>

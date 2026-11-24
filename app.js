@@ -41,9 +41,26 @@
     unisex: "للجنسين",
   };
 
-  const catalog = typeof PRODUCTS !== "undefined" && Array.isArray(PRODUCTS) ? PRODUCTS : [];
-  const store = typeof STORE_CONFIG !== "undefined" ? STORE_CONFIG : {
+  let catalog = (typeof PRODUCTS !== "undefined" && Array.isArray(PRODUCTS) ? PRODUCTS : []).map((p, idx) => ({
+    ...p,
+    in_stock: p.in_stock !== false,
+    is_active: p.is_active !== false,
+    compare_at_price: p.compare_at_price || null,
+    sort_order: typeof p.sort_order === "number" ? p.sort_order : idx,
+  }));
+
+  const store = typeof STORE_CONFIG !== "undefined" ? { ...STORE_CONFIG } : {
     messengerUrl: "https://m.me/rouh.perfumes.eg",
+  };
+
+  const storeSettings = {
+    announcement_text: "شحن لجميع محافظات مصر — معاينة قبل الاستلام",
+    messenger_url: store.messengerUrl || "https://m.me/rouh.perfumes.eg",
+    whatsapp_number: store.whatsappNumber || "",
+    shipping_cairo_giza: 60,
+    shipping_alex_delta: 70,
+    shipping_upper_canal: 85,
+    free_shipping_threshold: 0,
   };
 
   const state = {
@@ -56,10 +73,13 @@
     theme: loadStorage(STORAGE_KEYS.theme, "light") === "dark" ? "dark" : "light",
     bag: normalizeBag(loadStorage(STORAGE_KEYS.bag, [])),
     wishlist: normalizeWishlist(loadStorage(STORAGE_KEYS.wishlist, [])),
+    appliedCoupon: null,
+    lastOrderText: "",
   };
 
   // DOM References
   const el = {
+    topNoticeText: document.getElementById("top-notice-text"),
     brandLogo: document.getElementById("brand-logo"),
     footerLogo: document.getElementById("footer-logo"),
     themeToggleBtn: document.getElementById("theme-toggle-btn"),
@@ -94,8 +114,35 @@
     bagItemsContainer: document.getElementById("bag-items-container"),
     bagFooter: document.getElementById("bag-footer"),
     bagSubtotal: document.getElementById("bag-subtotal"),
+    openCheckoutBtn: document.getElementById("open-checkout-btn"),
     bagCheckoutBtn: document.getElementById("bag-checkout-btn"),
     bagCopyBtn: document.getElementById("bag-copy-btn"),
+    // Checkout Modal
+    checkoutModal: document.getElementById("checkout-modal"),
+    closeCheckoutModal: document.getElementById("close-checkout-modal"),
+    checkoutFormView: document.getElementById("checkout-form-view"),
+    checkoutSuccessView: document.getElementById("checkout-success-view"),
+    checkoutForm: document.getElementById("checkout-form"),
+    coName: document.getElementById("co-name"),
+    coPhone: document.getElementById("co-phone"),
+    coGov: document.getElementById("co-gov"),
+    coAddress: document.getElementById("co-address"),
+    coNotes: document.getElementById("co-notes"),
+    checkoutError: document.getElementById("checkout-error"),
+    submitOrderBtn: document.getElementById("submit-order-btn"),
+    checkoutMiniItems: document.getElementById("checkout-mini-items"),
+    couponInput: document.getElementById("coupon-input"),
+    applyCouponBtn: document.getElementById("apply-coupon-btn"),
+    couponFeedback: document.getElementById("coupon-feedback"),
+    coSubtotal: document.getElementById("co-subtotal"),
+    coDiscountRow: document.getElementById("co-discount-row"),
+    coCouponLabel: document.getElementById("co-coupon-label"),
+    coDiscount: document.getElementById("co-discount"),
+    coShipping: document.getElementById("co-shipping"),
+    coGrandTotal: document.getElementById("co-grand-total"),
+    confirmedOrderCode: document.getElementById("confirmed-order-code"),
+    confirmedMessengerBtn: document.getElementById("confirmed-messenger-btn"),
+    confirmedDoneBtn: document.getElementById("confirmed-done-btn"),
     mobileNavDrawer: document.getElementById("mobile-nav-drawer"),
     openMobileNav: document.getElementById("open-mobile-nav"),
     closeMobileNav: document.getElementById("close-mobile-nav"),
@@ -251,18 +298,21 @@
       el.searchOverlay.classList.contains("open") ||
       el.productModal.classList.contains("open") ||
       el.bagDrawer.classList.contains("open") ||
+      (el.checkoutModal && el.checkoutModal.classList.contains("open")) ||
       el.mobileNavDrawer.classList.contains("open") ||
       el.mobileFilterSheet.classList.contains("open");
     document.body.style.overflow = anyOpen ? "hidden" : "";
   }
 
   function openLayer(layer) {
+    if (!layer) return;
     layer.classList.add("open");
     layer.setAttribute("aria-hidden", "false");
     syncScrollLock();
   }
 
   function closeLayer(layer) {
+    if (!layer) return;
     layer.classList.remove("open");
     layer.setAttribute("aria-hidden", "true");
     syncScrollLock();
@@ -273,6 +323,7 @@
       el.searchOverlay,
       el.productModal,
       el.bagDrawer,
+      el.checkoutModal,
       el.mobileNavDrawer,
       el.mobileFilterSheet,
     ].forEach((layer) => {
@@ -324,14 +375,27 @@
 
   function renderProductCard(p) {
     const isWished = state.wishlist.includes(p.id);
+    const isOut = p.in_stock === false;
+    const hasSale = !isOut && p.compare_at_price && Number(p.compare_at_price) > Number(p.price);
     const notePreview = (p.notes || []).slice(0, 3).join(" · ");
     const safeName = escapeHtml(p.name);
     const safeBrand = escapeHtml(p.brand || "ROUH");
     const safeImg = escapeHtml(p.image || "batch1_images/img_002.webp");
 
+    const cornerBadge = isOut
+      ? `<span class="card-badge-corner badge-out">نفذت الكمية</span>`
+      : hasSale
+        ? `<span class="card-badge-corner badge-sale">عرض</span>`
+        : "";
+
+    const oldPriceHtml = hasSale
+      ? `<span class="card-price-old">${formatPrice(p.compare_at_price)}</span>`
+      : "";
+
     return `
       <article class="product-card" data-id="${escapeHtml(p.id)}">
         <div class="card-media" data-action="quick-view" data-id="${escapeHtml(p.id)}">
+          ${cornerBadge}
           <img src="${safeImg}" alt="${safeName}" class="card-img" width="460" height="460" loading="lazy" decoding="async">
           <button
             type="button"
@@ -354,11 +418,14 @@
           <p class="card-meta-sub">${escapeHtml(notePreview || p.categoryName || "")}</p>
           <div class="card-bottom">
             <div class="card-price-row">
-              <span class="card-price">${formatPrice(p.price)}</span>
+              <div class="card-price-group">
+                <span class="card-price">${formatPrice(p.price)}</span>
+                ${oldPriceHtml}
+              </div>
               <span class="card-code">${escapeHtml(p.id)}</span>
             </div>
-            <button type="button" class="btn-add-bag" data-action="add-bag" data-id="${escapeHtml(p.id)}">
-              أضف للحقيبة
+            <button type="button" class="btn-add-bag" data-action="add-bag" data-id="${escapeHtml(p.id)}" ${isOut ? "disabled" : ""}>
+              ${isOut ? "نفذت الكمية" : "أضف للحقيبة"}
             </button>
           </div>
         </div>
@@ -467,7 +534,10 @@
   // Bag Management
   function addToBag(productId, qtyToAdd = 1) {
     const product = findProduct(productId);
-    if (!product) return;
+    if (!product || product.in_stock === false) {
+      showToast("عذراً، هذا العطر غير متوفر حالياً");
+      return;
+    }
 
     const existing = state.bag.find((item) => item.id === productId);
     if (existing) {
@@ -634,6 +704,8 @@
     if (!p) return;
 
     let modalQty = 1;
+    const isOut = p.in_stock === false;
+    const hasSale = !isOut && p.compare_at_price && Number(p.compare_at_price) > Number(p.price);
     const genderLabel = GENDER_LABELS[p.gender] || "للجنسين";
     const notesHtml = (p.notes || [])
       .map((n) => `<span class="meta-pill">${escapeHtml(n)}</span>`)
@@ -657,15 +729,18 @@
         <div class="modal-notes-list">${notesHtml}</div>
         <div class="modal-price-line">
           <span>السعر</span>
-          <strong class="modal-price">${formatPrice(p.price)}</strong>
+          <div class="card-price-group">
+            <strong class="modal-price">${formatPrice(p.price)}</strong>
+            ${hasSale ? `<span class="card-price-old">${formatPrice(p.compare_at_price)}</span>` : ""}
+          </div>
         </div>
         <div class="modal-actions">
           <div class="qty-stepper">
-            <button type="button" id="modal-qty-dec" aria-label="إنقاص">-</button>
+            <button type="button" id="modal-qty-dec" aria-label="إنقاص" ${isOut ? "disabled" : ""}>-</button>
             <span id="modal-qty-val">1</span>
-            <button type="button" id="modal-qty-inc" aria-label="زيادة">+</button>
+            <button type="button" id="modal-qty-inc" aria-label="زيادة" ${isOut ? "disabled" : ""}>+</button>
           </div>
-          <button type="button" class="btn-primary" id="modal-add-bag">أضف إلى الحقيبة</button>
+          <button type="button" class="btn-primary" id="modal-add-bag" ${isOut ? "disabled" : ""}>${isOut ? "نفذت الكمية" : "أضف إلى الحقيبة"}</button>
         </div>
         <button type="button" class="btn-outline btn-full" id="modal-direct-order">
           طلب هذا العطر مباشرة عبر ماسنجر
@@ -957,6 +1032,10 @@
       if (rem) return removeFromBag(rem.dataset.bagRemove);
     });
 
+    if (el.openCheckoutBtn) {
+      el.openCheckoutBtn.addEventListener("click", openCheckoutModal);
+    }
+
     el.bagCheckoutBtn.addEventListener("click", () => {
       checkoutToMessenger(getBagDetailedItems());
     });
@@ -967,6 +1046,38 @@
       const ok = await copyText(buildOrderSummaryMessage(items));
       showToast(ok ? "تم نسخ تفاصيل الطلب للحافظة" : "تعذر النسخ التلقائي");
     });
+
+    // Checkout Modal Listeners
+    if (el.closeCheckoutModal) {
+      el.closeCheckoutModal.addEventListener("click", () => closeLayer(el.checkoutModal));
+    }
+    if (el.checkoutModal) {
+      el.checkoutModal.addEventListener("click", (e) => {
+        if (e.target === el.checkoutModal) closeLayer(el.checkoutModal);
+      });
+    }
+    if (el.coGov) {
+      el.coGov.addEventListener("change", updateCheckoutTotals);
+    }
+    if (el.applyCouponBtn) {
+      el.applyCouponBtn.addEventListener("click", handleApplyCoupon);
+    }
+    if (el.checkoutForm) {
+      el.checkoutForm.addEventListener("submit", handleCheckoutSubmit);
+    }
+    if (el.confirmedMessengerBtn) {
+      el.confirmedMessengerBtn.addEventListener("click", async () => {
+        if (!state.lastOrderText) return;
+        const ok = await copyText(state.lastOrderText);
+        showToast(ok ? "تم نسخ ملخص طلبك.. جاري فتح ماسنجر" : "جاري فتح ماسنجر");
+        setTimeout(() => {
+          window.open(storeSettings.messenger_url || store.messengerUrl, "_blank", "noopener");
+        }, 450);
+      });
+    }
+    if (el.confirmedDoneBtn) {
+      el.confirmedDoneBtn.addEventListener("click", () => closeLayer(el.checkoutModal));
+    }
 
     // Product Modal Close
     el.closeProductModal.addEventListener("click", () => closeLayer(el.productModal));
@@ -992,9 +1103,316 @@
     });
   }
 
+  // --- In-Site Checkout & Coupons Logic ---
+  function computeShippingFee(govName, subtotalAfterDiscount) {
+    const threshold = Number(storeSettings.free_shipping_threshold || 0);
+    if (threshold > 0 && subtotalAfterDiscount >= threshold) {
+      return 0;
+    }
+    if (govName.includes("القاهرة")) return Number(storeSettings.shipping_cairo_giza || 60);
+    if (govName.includes("الإسكندرية") || govName.includes("البحري")) {
+      return Number(storeSettings.shipping_alex_delta || 70);
+    }
+    return Number(storeSettings.shipping_upper_canal || 85);
+  }
+
+  function updateCheckoutTotals() {
+    const items = getBagDetailedItems();
+    const subtotal = items.reduce((s, x) => s + (x.product.price || 0) * x.qty, 0);
+
+    let discount = 0;
+    if (state.appliedCoupon && state.appliedCoupon.valid) {
+      if (state.appliedCoupon.discount_type === "percent") {
+        discount = Math.round((subtotal * Math.min(Number(state.appliedCoupon.discount_value), 100)) / 100);
+      } else {
+        discount = Math.min(Number(state.appliedCoupon.discount_value), subtotal);
+      }
+      el.coDiscountRow.hidden = false;
+      el.coCouponLabel.textContent = `(${state.appliedCoupon.code})`;
+      el.coDiscount.textContent = `-${formatPrice(discount)}`;
+    } else {
+      el.coDiscountRow.hidden = true;
+    }
+
+    const afterDiscount = Math.max(0, subtotal - discount);
+    const shipping = computeShippingFee(el.coGov ? el.coGov.value : "القاهرة والجيزة", afterDiscount);
+    const grandTotal = afterDiscount + shipping;
+
+    el.coSubtotal.textContent = formatPrice(subtotal);
+    el.coShipping.textContent = shipping === 0 ? "مجاني" : formatPrice(shipping);
+    el.coGrandTotal.textContent = formatPrice(grandTotal);
+
+    return { items, subtotal, discount, shipping, grandTotal };
+  }
+
+  function openCheckoutModal() {
+    const items = getBagDetailedItems();
+    if (!items.length) {
+      showToast("الحقيبة فارغة، أضف عطراً أولاً");
+      return;
+    }
+
+    closeLayer(el.bagDrawer);
+    el.checkoutFormView.hidden = false;
+    el.checkoutSuccessView.hidden = true;
+    el.checkoutError.hidden = true;
+
+    el.checkoutMiniItems.innerHTML = items
+      .map(
+        ({ product, qty }) => `
+        <div class="checkout-mini-row">
+          <span class="checkout-mini-name">${escapeHtml(product.name)} × ${qty}</span>
+          <span>${formatPrice((product.price || 0) * qty)}</span>
+        </div>
+      `
+      )
+      .join("");
+
+    updateCheckoutTotals();
+    openLayer(el.checkoutModal);
+  }
+
+  async function handleApplyCoupon() {
+    const code = (el.couponInput.value || "").trim().toUpperCase();
+    if (!code) {
+      el.couponFeedback.hidden = false;
+      el.couponFeedback.className = "coupon-feedback err";
+      el.couponFeedback.textContent = "برجاء كتابة كود الخصم أولاً";
+      return;
+    }
+
+    const sb = window.getRouhSupabase ? window.getRouhSupabase() : null;
+    if (!sb) {
+      el.couponFeedback.hidden = false;
+      el.couponFeedback.className = "coupon-feedback err";
+      el.couponFeedback.textContent = "كود الخصم يعمل بعد ربط قاعدة بيانات المتجر (Supabase)";
+      return;
+    }
+
+    const items = getBagDetailedItems();
+    const subtotal = items.reduce((s, x) => s + (x.product.price || 0) * x.qty, 0);
+
+    el.applyCouponBtn.disabled = true;
+    el.applyCouponBtn.textContent = "...";
+    try {
+      const { data, error } = await sb.rpc("validate_coupon", {
+        p_code: code,
+        p_subtotal: subtotal,
+      });
+      if (error) throw error;
+
+      el.couponFeedback.hidden = false;
+      if (data && data.valid) {
+        state.appliedCoupon = data;
+        el.couponFeedback.className = "coupon-feedback ok";
+        el.couponFeedback.textContent = data.message || "تم تطبيق الخصم بنجاح";
+      } else {
+        state.appliedCoupon = null;
+        el.couponFeedback.className = "coupon-feedback err";
+        el.couponFeedback.textContent = (data && data.message) || "الكود غير صالح";
+      }
+      updateCheckoutTotals();
+    } catch {
+      el.couponFeedback.hidden = false;
+      el.couponFeedback.className = "coupon-feedback err";
+      el.couponFeedback.textContent = "تعذر التحقق من الكود، حاول مرة أخرى";
+    } finally {
+      el.applyCouponBtn.disabled = false;
+      el.applyCouponBtn.textContent = "تطبيق";
+    }
+  }
+
+  function generateOrderCode() {
+    const rand = Math.floor(100000 + Math.random() * 900000);
+    return `ROUH-${rand}`;
+  }
+
+  async function handleCheckoutSubmit(e) {
+    e.preventDefault();
+    el.checkoutError.hidden = true;
+
+    const name = (el.coName.value || "").trim();
+    const phoneRaw = (el.coPhone.value || "").trim().replace(/\s+/g, "");
+    const gov = el.coGov.value || "القاهرة والجيزة";
+    const address = (el.coAddress.value || "").trim();
+    const notes = (el.coNotes.value || "").trim();
+
+    if (name.length < 2) {
+      el.checkoutError.hidden = false;
+      el.checkoutError.textContent = "برجاء إدخال الاسم بالكامل بشكل صحيح";
+      return;
+    }
+    if (!/^(?:\+?2)?0?1[0125]\d{8}$/.test(phoneRaw) && phoneRaw.length < 8) {
+      el.checkoutError.hidden = false;
+      el.checkoutError.textContent = "برجاء إدخال رقم موبايل صحيح للتواصل عند الشحن";
+      return;
+    }
+    if (address.length < 5) {
+      el.checkoutError.hidden = false;
+      el.checkoutError.textContent = "برجاء كتابة العنوان التفصيلي للشحن";
+      return;
+    }
+
+    const { items, subtotal, discount, shipping, grandTotal } = updateCheckoutTotals();
+    if (!items.length) return;
+
+    const orderCode = generateOrderCode();
+    const orderItemsPayload = items.map(({ product, qty }) => ({
+      id: product.id,
+      name: product.name,
+      size: product.size || "100 ml",
+      price: Number(product.price || 0),
+      qty,
+    }));
+
+    const fullMsgLines = [
+      `طلب جديد من متجر رُوح (${orderCode})`,
+      `الاسم: ${name}`,
+      `الموبايل: ${phoneRaw}`,
+      `المحافظة: ${gov}`,
+      `العنوان: ${address}`,
+      notes ? `ملاحظات: ${notes}` : null,
+      "",
+      "المنتجات:",
+      ...orderItemsPayload.map((it, i) => `${i + 1}. ${it.name} (${it.id}) × ${it.qty} = ${it.price * it.qty} ج.م`),
+      "",
+      `المجموع الفرعي: ${subtotal} ج.م`,
+      discount > 0 ? `الخصم (${state.appliedCoupon.code}): -${discount} ج.م` : null,
+      `الشحن: ${shipping === 0 ? "مجاني" : shipping + " ج.م"}`,
+      `الإجمالي النهائي: ${grandTotal} ج.م`,
+    ].filter(Boolean);
+    state.lastOrderText = fullMsgLines.join("\n");
+
+    const sb = window.getRouhSupabase ? window.getRouhSupabase() : null;
+    if (!sb) {
+      // Graceful fallback when Supabase credentials aren't configured yet
+      el.checkoutError.hidden = false;
+      el.checkoutError.textContent = "استقبال الطلبات السحابي قيد التفعيل؛ تم تجهيز تفاصيل طلبك لإرسالها فوراً عبر ماسنجر.";
+      await copyText(state.lastOrderText);
+      setTimeout(() => {
+        window.open(storeSettings.messenger_url || store.messengerUrl, "_blank", "noopener");
+      }, 650);
+      return;
+    }
+
+    el.submitOrderBtn.disabled = true;
+    el.submitOrderBtn.textContent = "جاري تأكيد الطلب...";
+
+    try {
+      const { error } = await sb.from("orders").insert({
+        order_code: orderCode,
+        customer_name: name,
+        phone: phoneRaw,
+        governorate: gov,
+        address,
+        notes,
+        items: orderItemsPayload,
+        subtotal,
+        shipping_fee: shipping,
+        discount_amount: discount,
+        coupon_code: state.appliedCoupon ? state.appliedCoupon.code : null,
+        total: grandTotal,
+        status: "new",
+      });
+
+      if (error) throw error;
+
+      // Clear bag & coupon cleanly
+      state.bag = [];
+      state.appliedCoupon = null;
+      if (el.couponInput) el.couponInput.value = "";
+      if (el.couponFeedback) el.couponFeedback.hidden = true;
+      saveStorage(STORAGE_KEYS.bag, state.bag);
+      renderBag();
+
+      el.confirmedOrderCode.textContent = orderCode;
+      el.checkoutFormView.hidden = true;
+      el.checkoutSuccessView.hidden = false;
+      showToast("تم تسجيل طلبك بنجاح");
+    } catch (err) {
+      console.error("Order submit error:", err);
+      el.checkoutError.hidden = false;
+      el.checkoutError.textContent = "حدث خطأ أثناء إرسال الطلب، يمكنك المحاولة مجدداً أو الإرسال عبر ماسنجر.";
+    } finally {
+      el.submitOrderBtn.disabled = false;
+      el.submitOrderBtn.textContent = "تأكيد الطلب — الدفع عند الاستلام";
+    }
+  }
+
+  // --- Cloud Sync with Supabase (Non-blocking background hydration) ---
+  async function syncFromSupabase() {
+    const sb = window.getRouhSupabase ? window.getRouhSupabase() : null;
+    if (!sb) return;
+
+    try {
+      const [prodRes, settingsRes] = await Promise.all([
+        sb.from("products").select("*").eq("is_active", true).order("sort_order", { ascending: true }),
+        sb.from("store_settings").select("*").eq("id", 1).maybeSingle(),
+      ]);
+
+      if (settingsRes && settingsRes.data) {
+        Object.assign(storeSettings, settingsRes.data);
+        if (storeSettings.messenger_url) {
+          store.messengerUrl = storeSettings.messenger_url;
+        }
+        if (el.topNoticeText && storeSettings.announcement_text) {
+          el.topNoticeText.textContent = storeSettings.announcement_text;
+        }
+      }
+
+      if (prodRes && Array.isArray(prodRes.data) && prodRes.data.length > 0) {
+        const remoteMap = new Map();
+        const remoteList = prodRes.data.map((row) => ({
+          id: row.id,
+          name: row.name,
+          brand: row.brand,
+          category: row.category,
+          categoryName: row.category_name,
+          gender: row.gender || "unisex",
+          price: Number(row.price || 0),
+          compare_at_price: row.compare_at_price ? Number(row.compare_at_price) : null,
+          size: row.size || "100 ml",
+          notes: Array.isArray(row.notes) ? row.notes : [],
+          desc: row.description || "",
+          image: row.image || "batch1_images/img_002.webp",
+          in_stock: row.in_stock !== false,
+          is_active: row.is_active !== false,
+          sort_order: typeof row.sort_order === "number" ? row.sort_order : 1000,
+        }));
+
+        remoteList.forEach((rp) => remoteMap.set(rp.id, rp));
+
+        if (remoteList.length >= 100) {
+          // Full catalog hosted in Supabase: respect admin order, additions & deletions
+          catalog = remoteList;
+        } else {
+          // Partial overrides: update matching items and prepend newly added ones
+          const updatedIds = new Set();
+          catalog = catalog.map((localItem) => {
+            if (remoteMap.has(localItem.id)) {
+              updatedIds.add(localItem.id);
+              return { ...localItem, ...remoteMap.get(localItem.id) };
+            }
+            return localItem;
+          });
+          const extras = remoteList.filter((rp) => !updatedIds.has(rp.id));
+          if (extras.length) {
+            catalog = [...extras, ...catalog];
+          }
+        }
+
+        renderCatalog();
+        renderBag();
+      }
+    } catch (err) {
+      console.warn("Supabase sync skipped:", err);
+    }
+  }
+
   // Initialize
   applyTheme(state.theme);
   renderBag();
   renderCatalog();
   bindEvents();
+  syncFromSupabase();
 })();

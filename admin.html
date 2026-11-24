@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>إدارة متجر رُوح | ROUH Atelier Admin</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#F8F6F1">
+
+  <link rel="icon" type="image/png" href="logo_dark.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Cormorant+Garamond:wght@500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css?v=3.0">
+  <link rel="stylesheet" href="admin.css?v=1.0">
+</head>
+<body class="admin-body">
+
+  <!-- 1. Auth Login Gate -->
+  <main class="auth-gate" id="auth-gate">
+    <div class="auth-topbar">
+      <a href="index.html" class="btn-outline btn-sm">العودة للمتجر</a>
+      <button type="button" class="icon-btn" id="auth-theme-btn" aria-label="تبديل المظهر">
+        <svg class="theme-icon-dark" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.35">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+        <svg class="theme-icon-light" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.35">
+          <circle cx="12" cy="12" r="4.5"></circle>
+          <line x1="12" y1="2" x2="12" y2="4.5"></line>
+          <line x1="12" y1="19.5" x2="12" y2="22"></line>
+          <line x1="2" y1="12" x2="4.5" y2="12"></line>
+          <line x1="19.5" y1="12" x2="22" y2="12"></line>
+        </svg>
+      </button>
+    </div>
+
+    <div class="auth-card">
+      <img src="logo.webp" alt="رُوح للعطور" class="auth-logo" id="auth-logo" width="90" height="60">
+      <span class="eyebrow">ROUH ATELIER</span>
+      <h1 class="auth-title">بوابة إدارة المتجر</h1>
+      <p class="auth-subtitle">سجّل الدخول بحساب المدير لإدارة الطلبات، الكتالوج، الأسعار، وكوبونات الخصم.</p>
+
+      <div class="setup-banner" id="setup-warning" hidden>
+        <strong>بانتظار ربط قاعدة البيانات (Supabase)</strong>
+        <p>افتح ملف <code>supabase-config.js</code> وضع رابط المشروع والمفتاح العام (anonKey)، ثم أعد تحميل الصفحة لتسجيل الدخول.</p>
+      </div>
+
+      <form id="login-form" class="checkout-form" novalidate>
+        <div class="form-field">
+          <label for="login-email" class="form-label">البريد الإلكتروني</label>
+          <input type="email" id="login-email" class="form-input" placeholder="admin@rouhperfumes.shop" required dir="ltr">
+        </div>
+
+        <div class="form-field">
+          <label for="login-password" class="form-label">كلمة المرور</label>
+          <input type="password" id="login-password" class="form-input" placeholder="••••••••" required dir="ltr">
+        </div>
+
+        <p class="form-error" id="login-error" hidden></p>
+
+        <button type="submit" class="btn-primary btn-full" id="login-submit-btn">تسجيل الدخول</button>
+      </form>
+    </div>
+  </main>
+
+  <!-- 2. Authenticated Admin Shell -->
+  <div class="admin-shell" id="admin-shell" hidden>
+    <!-- Sidebar (Desktop) & Horizontal Nav (Mobile) -->
+    <aside class="admin-sidebar">
+      <div class="sidebar-brand">
+        <img src="logo.webp" alt="رُوح للعطور" class="sidebar-logo" id="sidebar-logo" width="84" height="56">
+        <span class="sidebar-sub">لوحة الإدارة السحابية</span>
+      </div>
+
+      <nav class="sidebar-nav" id="admin-nav" aria-label="أقسام الإدارة">
+        <button type="button" class="side-tab active" data-tab="overview">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.35">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+          </svg>
+          <span>نظرة عامة</span>
+        </button>
+
+        <button type="button" class="side-tab" data-tab="orders">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.35">
+            <path d="M6 8h12l1 12H5L6 8z"></path>
+            <path d="M9 8V6a3 3 0 0 1 6 0v2"></path>
+          </svg>
+          <span>الطلبات</span>
+          <span class="nav-pill-count" id="nav-new-orders-count" hidden>0</span>
+        </button>
+
+        <button type="button" class="side-tab" data-tab="products">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.35">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+          </svg>
+          <span>المنتجات والمخزون</span>
+        </button>
+
+        <button type="button" class="side-tab" data-tab="coupons">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.35">
+            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+            <line x1="7" y1="7" x2="7.01" y2="7"></line>
+          </svg>
+          <span>كوبونات الخصم</span>
+        </button>
+
+        <button type="button" class="side-tab" data-tab="settings">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.35">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          <span>إعدادات المتجر</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <a href="index.html" target="_blank" class="btn-outline btn-full btn-sm">معاينة المتجر</a>
+        <button type="button" class="btn-text-reset" id="logout-btn">تسجيل الخروج</button>
+      </div>
+    </aside>
+
+    <!-- Main Content Workspace -->
+    <div class="admin-main">
+      <header class="admin-topbar">
+        <div>
+          <h2 class="admin-view-title" id="view-title">نظرة عامة</h2>
+          <p class="admin-user-email" id="admin-email-lbl"></p>
+        </div>
+        <div class="admin-topbar-actions">
+          <button type="button" class="btn-outline btn-sm" id="refresh-all-btn">تحديث البيانات</button>
+          <button type="button" class="icon-btn" id="admin-theme-btn" aria-label="تبديل المظهر">
+            <svg class="theme-icon-dark" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.35">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+            <svg class="theme-icon-light" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.35">
+              <circle cx="12" cy="12" r="4.5"></circle>
+              <line x1="12" y1="2" x2="12" y2="4.5"></line>
+              <line x1="12" y1="19.5" x2="12" y2="22"></line>
+              <line x1="2" y1="12" x2="4.5" y2="12"></line>
+              <line x1="19.5" y1="12" x2="22" y2="12"></line>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <div class="admin-content">
+        <!-- TAB 1: Overview -->
+        <section class="admin-tab-panel" id="tab-overview">
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <span class="kpi-label">إجمالي الطلبات</span>
+              <strong class="kpi-value" id="kpi-total-orders">0</strong>
+            </div>
+            <div class="kpi-card">
+              <span class="kpi-label">طلبات جديدة قيد المراجعة</span>
+              <strong class="kpi-value kpi-brass" id="kpi-new-orders">0</strong>
+            </div>
+            <div class="kpi-card">
+              <span class="kpi-label">مبيعات الطلبات المُسلّمة</span>
+              <strong class="kpi-value" id="kpi-revenue">0 ج.م</strong>
+            </div>
+            <div class="kpi-card">
+              <span class="kpi-label">الكتالوج السحابي</span>
+              <strong class="kpi-value" id="kpi-products-count">0 عطر</strong>
+              <span class="kpi-sub" id="kpi-out-count"></span>
+            </div>
+          </div>
+
+          <div class="panel-box">
+            <div class="panel-box-head">
+              <h3 class="panel-box-title">أحدث الطلبات الواردة</h3>
+              <button type="button" class="btn-link-underline" id="overview-all-orders-btn">عرض كل الطلبات</button>
+            </div>
+            <div id="overview-recent-orders"></div>
+          </div>
+        </section>
+
+        <!-- TAB 2: Orders -->
+        <section class="admin-tab-panel" id="tab-orders" hidden>
+          <div class="toolbar-row">
+            <div class="segmented-control scrollable-seg" id="orders-status-filter">
+              <button type="button" class="seg-btn active" data-status="all">الكل</button>
+              <button type="button" class="seg-btn" data-status="new">جديد</button>
+              <button type="button" class="seg-btn" data-status="confirmed">تم التأكيد</button>
+              <button type="button" class="seg-btn" data-status="shipped">مع المندوب</button>
+              <button type="button" class="seg-btn" data-status="delivered">تم التسليم</button>
+              <button type="button" class="seg-btn" data-status="cancelled">ملغي</button>
+            </div>
+            <input type="search" id="orders-search" class="form-input toolbar-search" placeholder="بحث بكود الطلب، الاسم، أو الموبايل...">
+          </div>
+
+          <div class="orders-list" id="orders-list-container"></div>
+        </section>
+
+        <!-- TAB 3: Products & Stock -->
+        <section class="admin-tab-panel" id="tab-products" hidden>
+          <div class="import-banner" id="import-banner" hidden>
+            <div>
+              <strong>قاعدة المنتجات السحابية فارغة حالياً</strong>
+              <p>استورد جميع الـ 198 عطر من كتالوج الموقع بضغطة زر واحدة لتتمكن من تعديل أسعارها ومخزونها مباشرة من هنا.</p>
+            </div>
+            <button type="button" class="btn-primary" id="import-catalog-btn">استيراد الـ 198 عطر الآن</button>
+          </div>
+
+          <div class="toolbar-row">
+            <div class="toolbar-filters">
+              <input type="search" id="prod-search" class="form-input toolbar-search" placeholder="بحث بالاسم، البراند، أو الكود (RH-)...">
+              <select id="prod-cat-filter" class="minimal-select">
+                <option value="all">جميع الأقسام</option>
+                <option value="mirror-men">ميرور رجالي</option>
+                <option value="mirror-women">ميرور حريمي</option>
+                <option value="mirror-unisex">ميرور للجنسين</option>
+                <option value="original-men">أوريجنال رجالي</option>
+                <option value="original-women">أوريجنال حريمي</option>
+                <option value="original-unisex">أوريجنال للجنسين</option>
+                <option value="body-spray">معطرات جسم</option>
+                <option value="body-splash">بودي سبلاش</option>
+                <option value="white-musk">مسك فاخر</option>
+              </select>
+              <select id="prod-stock-filter" class="minimal-select">
+                <option value="all">كل الحالات</option>
+                <option value="in">متاح فقط</option>
+                <option value="out">نفذت الكمية</option>
+              </select>
+            </div>
+            <div class="toolbar-actions">
+              <button type="button" class="btn-outline btn-sm" id="sync-seed-btn" title="مزامنة أي منتجات ناقصة من ملف الموقع">مزامنة الكتالوج</button>
+              <button type="button" class="btn-primary btn-sm" id="open-add-product-btn">+ إضافة عطر جديد</button>
+            </div>
+          </div>
+
+          <div class="admin-products-list" id="admin-products-container"></div>
+        </section>
+
+        <!-- TAB 4: Coupons -->
+        <section class="admin-tab-panel" id="tab-coupons" hidden>
+          <div class="panel-box">
+            <h3 class="panel-box-title">إنشاء كود خصم جديد</h3>
+            <form id="create-coupon-form" class="coupon-create-grid">
+              <div class="form-field">
+                <label for="cp-code" class="form-label">كود الخصم (حروف إنجليزية)</label>
+                <input type="text" id="cp-code" class="form-input" placeholder="ROUH15" required dir="ltr">
+              </div>
+              <div class="form-field">
+                <label for="cp-type" class="form-label">نوع الخصم</label>
+                <select id="cp-type" class="form-input">
+                  <option value="percent">نسبة مئوية (%)</option>
+                  <option value="fixed">مبلغ ثابت (ج.م)</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label for="cp-val" class="form-label">قيمة الخصم</label>
+                <input type="number" id="cp-val" class="form-input" min="1" placeholder="15" required dir="ltr">
+              </div>
+              <div class="form-field">
+                <label for="cp-min" class="form-label">حد أدنى للطلب (ج.م)</label>
+                <input type="number" id="cp-min" class="form-input" min="0" value="0" dir="ltr">
+              </div>
+              <div class="form-field coupon-btn-cell">
+                <button type="submit" class="btn-primary btn-full" id="cp-submit-btn">إنشاء الكوبون</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="panel-box">
+            <h3 class="panel-box-title">الأكواد الحالية</h3>
+            <div id="coupons-list-container"></div>
+          </div>
+        </section>
+
+        <!-- TAB 5: Settings -->
+        <section class="admin-tab-panel" id="tab-settings" hidden>
+          <form id="settings-form" class="panel-box settings-form-box">
+            <h3 class="panel-box-title">إعدادات الواجهة والشحن والتواصل</h3>
+
+            <div class="form-field">
+              <label for="set-announcement" class="form-label">نص الشريط العلوي في المتجر</label>
+              <input type="text" id="set-announcement" class="form-input" required>
+            </div>
+
+            <div class="settings-grid-2">
+              <div class="form-field">
+                <label for="set-ship-cairo" class="form-label">شحن القاهرة والجيزة (ج.م)</label>
+                <input type="number" id="set-ship-cairo" class="form-input" min="0" required dir="ltr">
+              </div>
+              <div class="form-field">
+                <label for="set-ship-alex" class="form-label">شحن الإسكندرية والوجه البحري (ج.م)</label>
+                <input type="number" id="set-ship-alex" class="form-input" min="0" required dir="ltr">
+              </div>
+              <div class="form-field">
+                <label for="set-ship-upper" class="form-label">شحن القناة وسيناء والصعيد (ج.م)</label>
+                <input type="number" id="set-ship-upper" class="form-input" min="0" required dir="ltr">
+              </div>
+              <div class="form-field">
+                <label for="set-free-ship" class="form-label">شحن مجاني للطلبات فوق (ج.م) &mdash; اكتب 0 للإلغاء</label>
+                <input type="number" id="set-free-ship" class="form-input" min="0" required dir="ltr">
+              </div>
+              <div class="form-field">
+                <label for="set-messenger" class="form-label">رابط شات ماسنجر</label>
+                <input type="url" id="set-messenger" class="form-input" required dir="ltr">
+              </div>
+              <div class="form-field">
+                <label for="set-whatsapp" class="form-label">رقم الواتساب (اختياري)</label>
+                <input type="text" id="set-whatsapp" class="form-input" placeholder="2010xxxxxxxx" dir="ltr">
+              </div>
+            </div>
+
+            <button type="submit" class="btn-primary" id="save-settings-btn">حفظ الإعدادات</button>
+          </form>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add / Edit Product Modal -->
+  <div class="modal-backdrop" id="admin-product-modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal-dialog admin-prod-dialog">
+      <div class="drawer-head">
+        <h3 class="drawer-heading" id="prod-modal-title">إضافة عطر جديد</h3>
+        <button type="button" class="icon-btn" id="close-prod-modal" aria-label="إغلاق">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.35">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <form id="admin-product-form" class="prod-form-body">
+        <div class="prod-form-grid">
+          <div class="prod-photo-col">
+            <div class="prod-photo-preview">
+              <img id="pf-img-preview" src="batch1_images/img_002.webp" alt="معاينة الصورة">
+            </div>
+            <label class="btn-outline btn-full btn-sm upload-btn-lbl">
+              <span>اختيار صورة (تتحول تلقائياً لـ WebP)</span>
+              <input type="file" id="pf-image-file" accept="image/*" hidden>
+            </label>
+            <p class="upload-status" id="pf-upload-status"></p>
+            <div class="form-field">
+              <label for="pf-image-url" class="form-label">أو مسار / رابط الصورة</label>
+              <input type="text" id="pf-image-url" class="form-input" value="batch1_images/img_002.webp" dir="ltr" required>
+            </div>
+          </div>
+
+          <div class="prod-fields-col">
+            <div class="settings-grid-2">
+              <div class="form-field">
+                <label for="pf-id" class="form-label">كود العطر (ID) *</label>
+                <input type="text" id="pf-id" class="form-input" placeholder="RH-0600" required dir="ltr">
+              </div>
+              <div class="form-field">
+                <label for="pf-brand" class="form-label">البراند *</label>
+                <input type="text" id="pf-brand" class="form-input" placeholder="Amouage / Dior" required>
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label for="pf-name" class="form-label">اسم العطر بالعربية *</label>
+              <input type="text" id="pf-name" class="form-input" required>
+            </div>
+
+            <div class="settings-grid-3">
+              <div class="form-field">
+                <label for="pf-category" class="form-label">القسم *</label>
+                <select id="pf-category" class="form-input">
+                  <option value="mirror-men">ميرور رجالي</option>
+                  <option value="mirror-women">ميرور حريمي</option>
+                  <option value="mirror-unisex">ميرور للجنسين</option>
+                  <option value="original-men">أوريجنال رجالي</option>
+                  <option value="original-women">أوريجنال حريمي</option>
+                  <option value="original-unisex">أوريجنال للجنسين</option>
+                  <option value="body-spray">معطرات جسم</option>
+                  <option value="body-splash">بودي سبلاش</option>
+                  <option value="white-musk">المسك الأبيض والفاخر</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label for="pf-gender" class="form-label">الفئة</label>
+                <select id="pf-gender" class="form-input">
+                  <option value="men">رجالي</option>
+                  <option value="women">حريمي</option>
+                  <option value="unisex">للجنسين</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label for="pf-size" class="form-label">الحجم</label>
+                <input type="text" id="pf-size" class="form-input" value="100 ml" dir="ltr">
+              </div>
+            </div>
+
+            <div class="settings-grid-2">
+              <div class="form-field">
+                <label for="pf-price" class="form-label">السعر الحالي (ج.م) *</label>
+                <input type="number" id="pf-price" class="form-input" min="0" required dir="ltr">
+              </div>
+              <div class="form-field">
+                <label for="pf-compare-price" class="form-label">السعر قبل الخصم (اختياري)</label>
+                <input type="number" id="pf-compare-price" class="form-input" min="0" placeholder="اتركه فارغاً إذا لم يوجد خصم" dir="ltr">
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label for="pf-notes" class="form-label">النوتات العطرية (مفصولة بفاصلة ،)</label>
+              <input type="text" id="pf-notes" class="form-input" placeholder="خشبي، عنبري، فانيلا، متبل">
+            </div>
+
+            <div class="form-field">
+              <label for="pf-desc" class="form-label">الوصف</label>
+              <textarea id="pf-desc" class="form-input" rows="2"></textarea>
+            </div>
+
+            <div class="checkboxes-row">
+              <label class="check-label">
+                <input type="checkbox" id="pf-in-stock" checked>
+                <span>متاح للطلب (In Stock)</span>
+              </label>
+              <label class="check-label">
+                <input type="checkbox" id="pf-is-active" checked>
+                <span>ظاهر للعملاء في المتجر</span>
+              </label>
+            </div>
+
+            <button type="submit" class="btn-primary btn-full" id="pf-save-btn">حفظ العطر</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast" id="admin-toast" role="status" aria-live="polite"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="supabase-config.js?v=3.0" defer></script>
+  <script src="products.js?v=3.0" defer></script>
+  <script src="admin.js?v=1.0" defer></script>
+</body>
+</html>
